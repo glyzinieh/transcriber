@@ -73,10 +73,16 @@ async def transcribe(
     if not file.filename:
         raise HTTPException(status_code=400, detail="ファイル名を取得できませんでした")
 
+    content = await file.read()
+    if not content:
+        raise HTTPException(
+            status_code=400, detail="空のファイルは文字起こしできません"
+        )
+
     suffix = Path(file.filename).suffix or ".wav"
     job_id = uuid.uuid4().hex
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
-        temp_file.write(await file.read())
+        temp_file.write(content)
         temp_path = temp_file.name
 
     output_path = str(Path(temp_path).with_suffix(".txt"))

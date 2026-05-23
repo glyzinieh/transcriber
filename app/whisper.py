@@ -32,7 +32,11 @@ def transcribe_audio(file_path, progress_callback=None):
         except Exception:
             pass
 
-    result = model.transcribe(file_path, fp16=False)
+    audio = whisper.load_audio(file_path)
+    if getattr(audio, "size", 0) == 0:
+        raise ValueError("音声データを読み込めませんでした")
+
+    result = model.transcribe(audio, fp16=False)
 
     if progress_callback:
         try:
