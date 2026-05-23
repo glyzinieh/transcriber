@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Transcriber</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <main class="card">
+        <span class="eyebrow">Whisper Audio Transcriber</span>
+        <h1>音声をアップロードして、バックグラウンドで文字起こし</h1>
+        <p>音声ファイルを選ぶと Whisper で文字起こしを開始し、完了後に .txt をダウンロードできます。</p>
+        <form action="/transcribe" method="post" enctype="multipart/form-data">
+            <div class="dropzone">
+                <label for="file">音声ファイル</label>
+                <input id="file" name="file" type="file" accept="audio/*,.mp3,.m4a,.wav,.mp4,.webm" required>
+                <div class="hint">対応例: mp3, wav, m4a, mp4, webm</div>
+            </div>
+            <button type="submit">文字起こししてダウンロード</button>
+        </form>
+
+        {% if jobs %}
+        <section class="jobs card">
+            <h2>ジョブ一覧</h2>
+            <ul class="job-list">
+                {% for job in jobs %}
+                <li class="job-item">
+                    <a href="/jobs/{{ job.job_id }}">{{ job.filename or '（ファイル名なし）' }}</a>
+                    <span class="job-status status-{{ job.status }}">{{ job.status }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Transcriber - 状態</title>
+    {% if status != "done" and status != "failed" %}
+    <meta http-equiv="refresh" content="30">
+    {% endif %}
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <main class="card">
+        <span class="eyebrow">Whisper Audio Transcriber</span>
+        <h1>文字起こしの状態</h1>
+        <p>{{ filename }} を処理しています。</p>
+
+        <section class="status-box">
+            <div class="status-label status-{{ status }}">
+                {% if status == "queued" %}
+                キューに追加済み
+                {% elif status == "processing" %}
+                文字起こし中
+                {% elif status == "done" %}
+                完了
+                {% elif status == "failed" %}
+                失敗
+                {% else %}
+                {{ status }}
+                {% endif %}
+            </div>
+
+            {% if status != "done" and status != "failed" %}
+            <p>進捗: {{ progress | default('0') }}%</p>
+            <div class="progress">
+                <div class="progress-bar" style="width: {{ progress | default('0') }}%;"></div>
+            </div>
+            {% endif %}
+
+            {% if status == "done" %}
+            <p>処理が完了しました。テキストファイルをダウンロードできます。</p>
+            <a class="download-link" href="/download/{{ job_id }}">TXT をダウンロード</a>
+            {% elif status == "failed" %}
+            <p>処理中にエラーが発生しました。</p>
+            <p>{{ error }}</p>
+            {% else %}
+            <p>バックグラウンドで文字起こしを実行中です。完了すると自動で更新されます。</p>
+            {% endif %}
+        </section>
+
+        <a class="secondary-link" href="/">別のファイルをアップロードする</a>
+    </main>
+</body>
+
+</html>
